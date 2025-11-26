@@ -41,73 +41,74 @@ fun MainScreen(navController: NavController) {
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White),
-        contentAlignment = Alignment.Center
-    ) {
-        Card(
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(navController = navController, currentRoute = "main")
+        }
+    ) { paddingValues ->
+        Box(
             modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(4.dp)
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(Color.White),
+            contentAlignment = Alignment.Center
         ) {
-            Column(
+            Card(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxWidth(0.9f)
+                    .padding(16.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(4.dp)
             ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
-                // 🔹 Título principal
-                Text(
-                    text = "Alertas Actuales",
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1B263B),
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // 🔹 Mostrar información del dispositivo
-                Text(
-                    text = "Dispositivo: $nombreDispositivo",
-                    fontSize = 16.sp,
-                    color = Color(0xFF1B263B)
-                )
-
-                Text(
-                    text = "Estado: $modo",
-                    fontSize = 16.sp,
-                    color = if (modo == "Encendido") Color(0xFF2E7D32) else Color(0xFFB71C1C)
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // 🔹 Mostrar UNA sola alerta si está encendido
-                if (modo == "Encendido" && alerta.isNotEmpty()) {
-                    AlertCard(texto = alerta)
-                } else {
+                    // 🔹 Título principal
                     Text(
-                        text = if (modo == "Encendido") "Esperando alertas..." else "",
-                        color = Color.Gray
+                        text = "Alertas Actuales",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1B263B),
+                        textAlign = TextAlign.Center
                     )
-                }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                // 🔹 Botones
-                MainButton("Silenciar Alarma") { /* acción simulada */ }
-                Spacer(modifier = Modifier.height(12.dp))
-                MainButton("Ver Detalles del Sensor") {
-                    navController.navigate("config")
+                    // 🔹 Mostrar información del dispositivo
+                    Text(
+                        text = "Dispositivo: $nombreDispositivo",
+                        fontSize = 16.sp,
+                        color = Color(0xFF1B263B)
+                    )
+
+                    Text(
+                        text = "Estado: $modo",
+                        fontSize = 16.sp,
+                        color = if (modo == "Encendido") Color(0xFF2E7D32) else Color(0xFFB71C1C)
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // 🔹 Mostrar UNA sola alerta si está encendido
+                    if (modo == "Encendido" && alerta.isNotEmpty()) {
+                        AlertCard(texto = alerta)
+                    } else {
+                        Text(
+                            text = if (modo == "Encendido") "Esperando alertas..." else "",
+                            color = Color.Gray
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // 🔹 Botones
+                    MainButton("Silenciar Alarma") { /* acción simulada */ }
                 }
-                Spacer(modifier = Modifier.height(12.dp))
-                MainButton("Volver") { navController.popBackStack() }
             }
         }
     }
