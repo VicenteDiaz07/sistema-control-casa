@@ -117,7 +117,16 @@ fun ConfigScreen(navController: NavController) {
                         onValueChange = { nombreDispositivo = it },
                         singleLine = true,
                         shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFF0D47A1),
+                            unfocusedBorderColor = Color(0xFF757575),
+                            focusedLabelColor = Color(0xFF0D47A1),
+                            unfocusedLabelColor = Color(0xFF757575),
+                            cursorColor = Color(0xFF0D47A1),
+                            focusedTextColor = Color(0xFF1B263B),
+                            unfocusedTextColor = Color(0xFF1B263B)
+                        )
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -131,7 +140,16 @@ fun ConfigScreen(navController: NavController) {
                         singleLine = true,
                         placeholder = { Text("192.168.1.100") },
                         shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFF0D47A1),
+                            unfocusedBorderColor = Color(0xFF757575),
+                            focusedLabelColor = Color(0xFF0D47A1),
+                            unfocusedLabelColor = Color(0xFF757575),
+                            cursorColor = Color(0xFF0D47A1),
+                            focusedTextColor = Color(0xFF1B263B),
+                            unfocusedTextColor = Color(0xFF1B263B)
+                        )
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -155,7 +173,18 @@ fun ConfigScreen(navController: NavController) {
                         readOnly = true,
                         singleLine = true,
                         shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFF0D47A1),
+                            unfocusedBorderColor = Color(0xFF757575),
+                            focusedLabelColor = Color(0xFF0D47A1),
+                            unfocusedLabelColor = Color(0xFF757575),
+                            cursorColor = Color(0xFF0D47A1),
+                            focusedTextColor = Color(0xFF1B263B),
+                            unfocusedTextColor = Color(0xFF1B263B),
+                            disabledTextColor = Color(0xFF757575),
+                            disabledBorderColor = Color(0xFF757575)
+                        )
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))

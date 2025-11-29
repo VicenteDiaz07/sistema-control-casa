@@ -14,29 +14,83 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
+import com.example.prueba.model.Alerta
+import com.example.prueba.network.ArduinoClient
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
 fun MainScreen(navController: NavController) {
     var alerta by remember { mutableStateOf("") }
+    var ultimaAlertaTimestamp by remember { mutableStateOf(0L) }
+    val db = FirebaseFirestore.getInstance()
+    val scope = rememberCoroutineScope()
+    val arduinoClient = remember { ArduinoClient() }
 
     val contexto = LocalContext.current
     val prefs = contexto.getSharedPreferences("config", Context.MODE_PRIVATE)
     val nombreDispositivo = prefs.getString("nombre", "Casa Principal")
     val modo = prefs.getString("modo", "Encendido")
+    val arduinoIP = prefs.getString("arduino_ip", "")
 
-    // 🔹 Actualizar alerta cada 5 segundos si está en modo "Encendido"
-    LaunchedEffect(modo) {
+    // 🔹 Consultar Arduino cada 3 segundos si está en modo "Encendido"
+    LaunchedEffect(modo, arduinoIP) {
         while (true) {
-            delay(5000)
-            if (modo == "Encendido") {
-                val horaActual = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
-                alerta = "Movimiento detectado a las $horaActual"
-            } else {
-                alerta = "" // no mostrar alerta si está apagado
+            delay(3000)
+            if (modo == "Encendido" && !arduinoIP.isNullOrEmpty()) {
+                scope.launch {
+                    try {
+                        // Obtener alertas del Arduino
+                        val response = arduinoClient.getAlerts(arduinoIP)
+                        
+                        if (response != null && response.contains("alertas")) {
+                            // Parsear respuesta simple (el Arduino envía JSON)
+                            // Formato esperado: {"alertas":[{"mensaje":"...","tiempo":123456}]}
+                            
+                            // Obtener estado del sistema
+                            val status = arduinoClient.getStatus(arduinoIP)
+                            if (status != null && status.contains("ultima_alerta")) {
+                                // Extraer mensaje de alerta
+                                val mensajeMatch = Regex("\"ultima_alerta\":\"([^\"]+)\"").find(status)
+                                val tiempoMatch = Regex("\"tiempo_alerta\":(\\d+)").find(status)
+                                
+                                if (mensajeMatch != null && tiempoMatch != null) {
+                                    val mensaje = mensajeMatch.groupValues[1]
+                                    val tiempo = tiempoMatch.groupValues[1].toLongOrNull() ?: 0L
+                                    
+                                    // Solo guardar si es una alerta nueva
+                                    if (tiempo > ultimaAlertaTimestamp && mensaje.isNotEmpty()) {
+                                        ultimaAlertaTimestamp = tiempo
+                                        alerta = mensaje
+                                        
+                                        // Guardar en Firestore
+                                        val nuevaAlerta = Alerta(
+                                            id = db.collection("alertas").document().id,
+                                            mensaje = mensaje,
+                                            timestamp = System.currentTimeMillis(),
+                                            tipo = "movimiento",
+                                            dispositivo = nombreDispositivo ?: "Desconocido",
+                                            leida = false
+                                        )
+                                        
+                                        db.collection("alertas")
+                                            .document(nuevaAlerta.id)
+                                            .set(nuevaAlerta)
+                                    }
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        // Error de conexión - no hacer nada
+                    }
+                }
+            } else if (modo == "Apagado") {
+                alerta = ""
             }
         }
     }

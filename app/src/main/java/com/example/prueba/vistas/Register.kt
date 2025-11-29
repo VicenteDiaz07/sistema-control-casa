@@ -65,7 +65,16 @@ fun Register(navController: NavController, auth: FirebaseAuth) {
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(10.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFF0D47A1),
+                        unfocusedBorderColor = Color(0xFF757575),
+                        focusedLabelColor = Color(0xFF0D47A1),
+                        unfocusedLabelColor = Color(0xFF757575),
+                        cursorColor = Color(0xFF0D47A1),
+                        focusedTextColor = Color(0xFF1B263B),
+                        unfocusedTextColor = Color(0xFF1B263B)
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -77,7 +86,16 @@ fun Register(navController: NavController, auth: FirebaseAuth) {
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(10.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFF0D47A1),
+                        unfocusedBorderColor = Color(0xFF757575),
+                        focusedLabelColor = Color(0xFF0D47A1),
+                        unfocusedLabelColor = Color(0xFF757575),
+                        cursorColor = Color(0xFF0D47A1),
+                        focusedTextColor = Color(0xFF1B263B),
+                        unfocusedTextColor = Color(0xFF1B263B)
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -90,7 +108,16 @@ fun Register(navController: NavController, auth: FirebaseAuth) {
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(10.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFF0D47A1),
+                        unfocusedBorderColor = Color(0xFF757575),
+                        focusedLabelColor = Color(0xFF0D47A1),
+                        unfocusedLabelColor = Color(0xFF757575),
+                        cursorColor = Color(0xFF0D47A1),
+                        focusedTextColor = Color(0xFF1B263B),
+                        unfocusedTextColor = Color(0xFF1B263B)
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))

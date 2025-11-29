@@ -3,6 +3,7 @@ package com.example.prueba.vistas
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -11,7 +12,8 @@ import androidx.navigation.NavController
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
     object Main : BottomNavItem("main", Icons.Default.Home, "Principal")
-    object Config : BottomNavItem("config", Icons.Default.Settings, "Configuración")
+    object Historial : BottomNavItem("historial", Icons.Default.List, "Historial")
+    object Config : BottomNavItem("config", Icons.Default.Settings, "Config")
 }
 
 @Composable
@@ -22,6 +24,7 @@ fun BottomNavigationBar(navController: NavController, currentRoute: String) {
     ) {
         val items = listOf(
             BottomNavItem.Main,
+            BottomNavItem.Historial,
             BottomNavItem.Config
         )
 

@@ -19,6 +19,7 @@ import com.example.prueba.vistas.ConfigScreen
 import com.example.prueba.vistas.LoginScreen
 import com.example.prueba.vistas.Register
 import com.example.prueba.vistas.MainScreen
+import com.example.prueba.vistas.HistorialAlertasScreen
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -54,6 +55,7 @@ fun AppNavigation(auth: FirebaseAuth) {
                 composable("login") { LoginScreen(navController, auth) }
                 composable("register") { Register(navController, auth) }
                 composable("main") { MainScreen(navController) }
+                composable("historial") { HistorialAlertasScreen(navController) }
                 composable("config") { ConfigScreen(navController) }
             }
         }

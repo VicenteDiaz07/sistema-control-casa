@@ -3,6 +3,7 @@ package com.example.prueba.network
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -17,6 +18,11 @@ class ArduinoClient {
                 isLenient = true
             })
         }
+        install(HttpTimeout) {
+            requestTimeoutMillis = 5000
+            connectTimeoutMillis = 5000
+            socketTimeoutMillis = 5000
+        }
         engine {
             connectTimeout = 5_000
             socketTimeout = 5_000
@@ -30,11 +36,7 @@ class ArduinoClient {
      */
     suspend fun testConnection(ip: String): Boolean {
         return try {
-            val response: HttpResponse = client.get("http://$ip/status") {
-                timeout {
-                    requestTimeoutMillis = 5000
-                }
-            }
+            val response: HttpResponse = client.get("http://$ip/status")
             response.status.isSuccess()
         } catch (e: Exception) {
             false
