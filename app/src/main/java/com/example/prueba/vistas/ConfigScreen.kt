@@ -1,10 +1,13 @@
 package com.example.prueba.vistas
 
 import android.content.Context
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,8 +19,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.compose.foundation.BorderStroke
 import com.example.prueba.network.ArduinoClient
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 @Composable
@@ -27,18 +30,15 @@ fun ConfigScreen(navController: NavController) {
     val scope = rememberCoroutineScope()
     val arduinoClient = remember { ArduinoClient() }
 
-    // 🔹 Cargar valores guardados o valores por defecto
     var modo by remember { mutableStateOf(prefs.getString("modo", "Encendido") ?: "Encendido") }
     var nombreDispositivo by remember { mutableStateOf(prefs.getString("nombre", "Casa Principal") ?: "Casa Principal") }
-    var arduinoIP by remember { mutableStateOf(prefs.getString("arduino_ip", "192.168.1.100") ?: "192.168.1.100") }
-    
-    // Estados para la prueba de conexión
+    var arduinoIP by remember { mutableStateOf(prefs.getString("arduino_ip", "") ?: "") }
     var estadoConexion by remember { mutableStateOf("No probado") }
     var colorEstado by remember { mutableStateOf(Color.Gray) }
     var probandoConexion by remember { mutableStateOf(false) }
 
-    // 🔹 La conexión siempre será WiFi (no editable)
     val conexion = "WiFi"
+    val scrollState = rememberScrollState()
 
     Scaffold(
         bottomBar = {
@@ -50,7 +50,7 @@ fun ConfigScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(paddingValues)
                 .background(Color.White),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.TopCenter
         ) {
             Card(
                 modifier = Modifier
@@ -63,6 +63,7 @@ fun ConfigScreen(navController: NavController) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .verticalScroll(scrollState)
                         .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -76,7 +77,6 @@ fun ConfigScreen(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // 🔹 Selector de modo (toca para alternar entre Encendido / Apagado)
                     Text("Modo Automático", fontWeight = FontWeight.Medium)
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -90,26 +90,15 @@ fun ConfigScreen(navController: NavController) {
                         border = BorderStroke(1.dp, Color(0xFF79747E)),
                         color = Color.Transparent
                     ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp)
-                        ) {
-                            Text(
-                                text = "Tocar para cambiar",
-                                fontSize = 12.sp,
-                                color = Color(0xFF79747E)
-                            )
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text("Tocar para cambiar", fontSize = 12.sp, color = Color(0xFF79747E))
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = modo,
-                                fontSize = 16.sp,
-                                color = Color(0xFF1B263B)
-                            )
+                            Text(modo, fontSize = 16.sp, color = Color(0xFF1B263B))
                         }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // 🔹 Campo editable para el nombre del dispositivo
                     Text("Nombre del Dispositivo", fontWeight = FontWeight.Medium)
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
@@ -121,8 +110,6 @@ fun ConfigScreen(navController: NavController) {
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Color(0xFF0D47A1),
                             unfocusedBorderColor = Color(0xFF757575),
-                            focusedLabelColor = Color(0xFF0D47A1),
-                            unfocusedLabelColor = Color(0xFF757575),
                             cursorColor = Color(0xFF0D47A1),
                             focusedTextColor = Color(0xFF1B263B),
                             unfocusedTextColor = Color(0xFF1B263B)
@@ -131,7 +118,6 @@ fun ConfigScreen(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // 🔹 IP del Arduino
                     Text("IP del Arduino", fontWeight = FontWeight.Medium)
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
@@ -144,8 +130,6 @@ fun ConfigScreen(navController: NavController) {
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Color(0xFF0D47A1),
                             unfocusedBorderColor = Color(0xFF757575),
-                            focusedLabelColor = Color(0xFF0D47A1),
-                            unfocusedLabelColor = Color(0xFF757575),
                             cursorColor = Color(0xFF0D47A1),
                             focusedTextColor = Color(0xFF1B263B),
                             unfocusedTextColor = Color(0xFF1B263B)
@@ -154,7 +138,6 @@ fun ConfigScreen(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // 🔹 Estado de conexión
                     Text(
                         text = "Estado: $estadoConexion",
                         fontSize = 14.sp,
@@ -164,7 +147,6 @@ fun ConfigScreen(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // 🔹 Conexión fija (solo WiFi)
                     Text("Tipo de Conexión", fontWeight = FontWeight.Medium)
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
@@ -175,21 +157,13 @@ fun ConfigScreen(navController: NavController) {
                         shape = RoundedCornerShape(10.dp),
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFF0D47A1),
                             unfocusedBorderColor = Color(0xFF757575),
-                            focusedLabelColor = Color(0xFF0D47A1),
-                            unfocusedLabelColor = Color(0xFF757575),
-                            cursorColor = Color(0xFF0D47A1),
-                            focusedTextColor = Color(0xFF1B263B),
-                            unfocusedTextColor = Color(0xFF1B263B),
-                            disabledTextColor = Color(0xFF757575),
-                            disabledBorderColor = Color(0xFF757575)
+                            unfocusedTextColor = Color(0xFF1B263B)
                         )
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // 🔹 Botones de acción
                     Button(
                         onClick = {
                             probandoConexion = true
@@ -209,9 +183,7 @@ fun ConfigScreen(navController: NavController) {
                             }
                         },
                         enabled = !probandoConexion,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
+                        modifier = Modifier.fillMaxWidth().height(50.dp),
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF0D47A1),
@@ -225,15 +197,12 @@ fun ConfigScreen(navController: NavController) {
                                 strokeWidth = 2.dp
                             )
                         } else {
-                            Text(
-                                text = "Probar Conexión",
-                                color = Color.White,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Medium
-                            )
+                            Text("Probar Conexión", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Medium)
                         }
                     }
+                    
                     Spacer(modifier = Modifier.height(12.dp))
+                    
                     MainButton("Guardar Cambios") {
                         val editor = prefs.edit()
                         editor.putString("modo", modo)
@@ -242,30 +211,21 @@ fun ConfigScreen(navController: NavController) {
                         editor.apply()
                         navController.navigate("main")
                     }
+                    
                     Spacer(modifier = Modifier.height(12.dp))
                     
-                    // 🔹 Botón de cerrar sesión
                     Button(
                         onClick = {
-                            // Cerrar sesión de Firebase
-                            com.google.firebase.auth.FirebaseAuth.getInstance().signOut()
-                            // Navegar al login y limpiar el back stack
+                            FirebaseAuth.getInstance().signOut()
                             navController.navigate("login") {
                                 popUpTo(0) { inclusive = true }
                             }
                         },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
+                        modifier = Modifier.fillMaxWidth().height(50.dp),
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC62828))
                     ) {
-                        Text(
-                            text = "Cerrar Sesión",
-                            color = Color.White,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium
-                        )
+                        Text("Cerrar Sesión", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Medium)
                     }
                 }
             }
