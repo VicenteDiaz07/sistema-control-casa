@@ -204,12 +204,30 @@ fun ConfigScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(12.dp))
                     
                     MainButton("Guardar Cambios") {
-                        val editor = prefs.edit()
-                        editor.putString("modo", modo)
-                        editor.putString("nombre", nombreDispositivo)
-                        editor.putString("arduino_ip", arduinoIP)
-                        editor.apply()
-                        navController.navigate("main")
+                        scope.launch {
+                            // Guardar en SharedPreferences
+                            val editor = prefs.edit()
+                            editor.putString("modo", modo)
+                            editor.putString("nombre", nombreDispositivo)
+                            editor.putString("arduino_ip", arduinoIP)
+                            editor.apply()
+                            
+                            // Enviar comando al Arduino para sincronizar el modo
+                            if (arduinoIP.isNotEmpty()) {
+                                val modoArduino = if (modo == "Encendido") "on" else "off"
+                                val resultado = arduinoClient.setMode(arduinoIP, modoArduino)
+                                
+                                if (resultado) {
+                                    estadoConexion = "✓ Modo sincronizado con Arduino"
+                                    colorEstado = Color(0xFF2E7D32)
+                                } else {
+                                    estadoConexion = "⚠️ Guardado local, Arduino no responde"
+                                    colorEstado = Color(0xFFFF9800)
+                                }
+                            }
+                            
+                            navController.navigate("main")
+                        }
                     }
                     
                     Spacer(modifier = Modifier.height(12.dp))
