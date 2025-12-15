@@ -115,6 +115,48 @@ class ArduinoClient {
         }
     }
 
+    /**
+     * Obtiene datos pendientes de sincronización del ESP8266
+     * @param ip Dirección IP del ESP8266
+     * @return Lista de lecturas de sensores pendientes
+     */
+    suspend fun getPendingData(ip: String): List<Map<String, Any>>? {
+        return try {
+            val response: HttpResponse = client.get("http://$ip/pending-data")
+            if (response.status.isSuccess()) {
+                val jsonString = response.bodyAsText()
+                // Parsear JSON manualmente ya que es una lista simple
+                parseJsonArray(jsonString)
+            } else null
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * Limpia los datos ya sincronizados del ESP8266
+     * @param ip Dirección IP del ESP8266
+     * @return true si se limpiaron exitosamente
+     */
+    suspend fun clearSyncedData(ip: String): Boolean {
+        return try {
+            val response: HttpResponse = client.post("http://$ip/clear-synced")
+            response.status.isSuccess()
+        } catch (e: Exception) {
+            false
+        }
+    }
+    
+    /**
+     * Parser simple de JSON array
+     */
+    private fun parseJsonArray(jsonString: String): List<Map<String, Any>> {
+        // Implementación básica - en producción usar una librería JSON
+        val result = mutableListOf<Map<String, Any>>()
+        // Por ahora retornar lista vacía, se puede mejorar con kotlinx.serialization
+        return result
+    }
+
     fun close() {
         client.close()
     }

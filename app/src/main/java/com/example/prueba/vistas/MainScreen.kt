@@ -23,6 +23,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.prueba.ui.components.OfflineIndicator
 
 @Composable
 fun MainScreen(navController: NavController) {
@@ -38,10 +39,10 @@ fun MainScreen(navController: NavController) {
     val modo = prefs.getString("modo", "Encendido")
     val arduinoIP = prefs.getString("arduino_ip", "")
 
-    // 🔹 Consultar Arduino cada 3 segundos si está en modo "Encendido"
+    // 🔹 Consultar Arduino cada 10 segundos si está en modo "Encendido" (optimizado para batería)
     LaunchedEffect(modo, arduinoIP) {
         while (true) {
-            delay(3000)
+            delay(10000)  // Cambiado de 3s a 10s para ahorro de energía
             if (modo == "Encendido" && !arduinoIP.isNullOrEmpty()) {
                 scope.launch {
                     try {
@@ -100,13 +101,23 @@ fun MainScreen(navController: NavController) {
             BottomNavigationBar(navController = navController, currentRoute = "main")
         }
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(Color.White),
-            contentAlignment = Alignment.Center
         ) {
+            // Indicador de estado offline
+            OfflineIndicator(
+                isOnline = arduinoIP?.isNotEmpty() == true,
+                pendingSync = 0
+            )
+            
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White),
+                contentAlignment = Alignment.Center
+            ) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
@@ -162,6 +173,17 @@ fun MainScreen(navController: NavController) {
 
                     // 🔹 Botones
                     MainButton("Silenciar Alarma") { /* acción simulada */ }
+                    
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    OutlinedButton(
+                        onClick = { navController.navigate("commands") },
+                        modifier = Modifier.fillMaxWidth().height(50.dp),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("⚙️ Comandos Directos", fontSize = 16.sp)
+                    }
+                }
                 }
             }
         }

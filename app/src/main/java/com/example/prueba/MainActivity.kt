@@ -20,9 +20,13 @@ import com.example.prueba.vistas.LoginScreen
 import com.example.prueba.vistas.Register
 import com.example.prueba.vistas.MainScreen
 import com.example.prueba.vistas.HistorialAlertasScreen
+import com.example.prueba.vistas.DirectCommandsScreen
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.firestore.firestoreSettings
 
 class MainActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
@@ -33,6 +37,16 @@ class MainActivity : ComponentActivity() {
 
         // Inicia Firebase
         auth = Firebase.auth
+        
+        // 🔥 Habilitar persistencia offline de Firestore
+        val settings = firestoreSettings {
+            isPersistenceEnabled = true
+            cacheSizeBytes = FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED
+        }
+        FirebaseFirestore.getInstance().firestoreSettings = settings
+        
+        // 🔋 Programar sincronización en background (cada 15 minutos)
+        com.example.prueba.power.SyncWorker.schedule(this, intervalMinutes = 15)
 
         setContent {
             PruebaTheme {
@@ -57,6 +71,7 @@ fun AppNavigation(auth: FirebaseAuth) {
                 composable("main") { MainScreen(navController) }
                 composable("historial") { HistorialAlertasScreen(navController) }
                 composable("config") { ConfigScreen(navController) }
+                composable("commands") { DirectCommandsScreen(navController) }
             }
         }
     }

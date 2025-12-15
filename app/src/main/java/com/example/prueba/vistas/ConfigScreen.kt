@@ -22,6 +22,8 @@ import androidx.navigation.NavController
 import com.example.prueba.network.ArduinoClient
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
+import com.example.prueba.ui.components.BatteryIndicator
+import com.example.prueba.ui.components.BatteryConsumptionEstimate
 
 @Composable
 fun ConfigScreen(navController: NavController) {
@@ -75,7 +77,12 @@ fun ConfigScreen(navController: NavController) {
                         textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    // Indicador de batería
+                    BatteryIndicator()
+
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     Text("Modo Automático", fontWeight = FontWeight.Medium)
                     Spacer(modifier = Modifier.height(8.dp))
@@ -200,6 +207,11 @@ fun ConfigScreen(navController: NavController) {
                             Text("Probar Conexión", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Medium)
                         }
                     }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Estimación de consumo de batería
+                    BatteryConsumptionEstimate(pollingIntervalSeconds = 10)
                     
                     Spacer(modifier = Modifier.height(12.dp))
                     
